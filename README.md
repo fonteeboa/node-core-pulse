@@ -31,7 +31,6 @@ Nosso objetivo é que qualquer equipe — seja dev, QA, ou SRE — consiga **rod
   - [Por que usar este script? 💡](#por-que-usar-este-script-)
     - [**Vantagens sobre ferramentas tradicionais:**](#vantagens-sobre-ferramentas-tradicionais)
     - [**Ideal para:**](#ideal-para)
-  - [Tipos de Teste Suportados 🧪](#tipos-de-teste-suportados-)
   - [Licença 📝](#licença-)
 
 ---
@@ -73,17 +72,10 @@ Nosso objetivo é que qualquer equipe — seja dev, QA, ou SRE — consiga **rod
 
 ---
 
-
 **Dependências:**
 
 * Node.js >= 14.x
 * axios (para requisições HTTP)
-
----
-
-## Tipos de Teste Suportados 🧪
-
-(… manter seções de tipos de testes, guia de uso, exemplos, análise, melhores práticas, troubleshooting, contribuição e licença exatamente como no seu README atual, apenas substituindo **Robust Load** por **Core Pulse**)
 
 ---
 

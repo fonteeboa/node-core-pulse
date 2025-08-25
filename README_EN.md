@@ -31,7 +31,6 @@ Our goal is to empower any team — developers, QA, or SRE — to run **reliable
   - [Why Use This Script? 💡](#why-use-this-script-)
     - [**Advantages over traditional tools:**](#advantages-over-traditional-tools)
     - [**Ideal for:**](#ideal-for)
-  - [Supported Test Types 🧪](#supported-test-types-)
   - [License 📝](#license-)
 
 ---
@@ -77,12 +76,6 @@ Our goal is to empower any team — developers, QA, or SRE — to run **reliable
 
 * Node.js >= 14.x
 * axios (for HTTP requests)
-
----
-
-## Supported Test Types 🧪
-
-(… keep test types, usage guide, examples, result analysis, best practices, troubleshooting, contribution, and license sections from your original README, just replacing **Robust Load** with **Core Pulse**)
 
 ---
 
