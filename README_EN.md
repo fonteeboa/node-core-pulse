@@ -28,6 +28,9 @@ Our goal is to empower any team — developers, QA, or SRE — to run **reliable
   - [📖 Project Vision](#-project-vision)
   - [📋 Table of Contents](#-table-of-contents)
   - [What is Load Testing? 🎯](#what-is-load-testing-)
+  - [🔑 Main Flags](#-main-flags)
+  - [📊 Test Profiles](#-test-profiles)
+    - [⚡ Usage Examples](#-usage-examples)
   - [Why Use This Script? 💡](#why-use-this-script-)
     - [**Advantages over traditional tools:**](#advantages-over-traditional-tools)
     - [**Ideal for:**](#ideal-for)
@@ -45,6 +48,81 @@ Our goal is to empower any team — developers, QA, or SRE — to run **reliable
 * **Detect failure points** before production
 * **Optimize infrastructure resources**
 * **Ensure stability** under prolonged load
+
+---
+
+## 🔑 Main Flags
+
+| Flag                 | Description                                                   | Example                                                   |
+| -------------------- | ------------------------------------------------------------- | --------------------------------------------------------- |
+| `--baseURL`          | Defines targets (can repeat).                                 | `--baseURL=https://api1:3001 --baseURL=https://api2:3001` |
+| `--path`             | Default path if no `--route` is given.                        | `--path=/health`                                          |
+| `--header`           | Adds HTTP headers.                                            | `--header="Authorization: Bearer token"`                  |
+| `--route`            | Defines routes with weight (`METHOD:/path@weight`).           | `--route=GET:/health@70 --route=POST:/login@30`           |
+| `--profile`          | Generates automatic profiles: `step`, `soak`, `spike`, `all`. | `--profile=all`                                           |
+| `--mode`             | Manual execution: `rps` (rate) or `vus` (virtual users).      | `--mode=rps --rps=200 --duration=60`                      |
+| `--concurrency`      | Number of virtual users in `vus` mode.                        | `--concurrency=500`                                       |
+| `--rps`              | Requests per second in `rps` mode.                            | `--rps=400`                                               |
+| `--duration`         | Phase duration (s).                                           | `--duration=120`                                          |
+| `--ramp`             | Ramp up time (s).                                             | `--ramp=15`                                               |
+| `--timeout`          | Request timeout (ms).                                         | `--timeout=8000`                                          |
+| `--insecure`         | Ignore invalid TLS.                                           | `--insecure=true`                                         |
+| `--disableKeepAlive` | Disable keep-alive.                                           | `--disableKeepAlive=true`                                 |
+| `--json`             | Export metrics to JSON (append).                              | `--json=results.json`                                     |
+| `--csv`              | Export metrics to CSV (append).                               | `--csv=results.csv`                                       |
+| `--parallelTargets`  | Run phases on all targets in parallel.                        | `--parallelTargets=true`                                  |
+| `--stopP95Ms`        | Stop if p95 > threshold (ms).                                 | `--stopP95Ms=1200`                                        |
+| `--stopErrPct`       | Stop if error % > threshold.                                  | `--stopErrPct=2`                                          |
+
+---
+
+## 📊 Test Profiles
+
+* **step** → Gradually increases RPS (stress).
+* **soak** → Long steady load (endurance).
+* **spike** → Sudden burst of load (resilience).
+* **all** → Full mix (step + cooldown + soak + recovery + spike).
+
+---
+
+### ⚡ Usage Examples
+
+```bash
+# Simple smoke test
+node core-pulse.js --baseURL=https://srv:3001 --mode=rps --rps=200 --duration=60
+
+# Full profile (all) with warmup and JSON/CSV export
+node core-pulse.js --baseURL=https://srv:3001 --profile=all --warmup=15 --json=out.json --csv=out.csv
+
+# Weighted routes (70% health, 30% login)
+node core-pulse.js --baseURL=https://srv:3001 --route=GET:/health@70 --route=POST:/login@30 --mode=rps --rps=400 --duration=120
+
+# 🔥 Spike-to-failure (ramp until break)
+node core-pulse.js \
+  --baseURL=https://srv:3001 \
+  --profile=step \
+  --stepStartRps=300 --step=200 --stepMaxRps=8000 --phaseDur=30 \
+  --warmup=10 \
+  --stopP95Ms=1200 --stopErrPct=2 \
+  --json=out.json --csv=out.csv
+
+# 🔥 Connection saturation (VUs mode)
+node core-pulse.js \
+  --baseURL=https://srv:3001 \
+  --mode=vus --concurrency=20000 --duration=60 --ramp=0 --syncStart=true \
+  --disableKeepAlive=true --maxSockets=100000 --timeout=15000 \
+  --path=/health \
+  --json=conn.json --csv=conn.csv
+
+# 🔥 Final resilience (endurance + spike)
+node core-pulse.js \
+  --baseURL=https://srv:3001 \
+  --profile=all \
+  --stepStartRps=400 --step=200 --stepMaxRps=5000 --phaseDur=45 \
+  --warmup=15 \
+  --stopP95Ms=1500 --stopErrPct=3 \
+  --json=resilience.json --csv=resilience.csv
+```
 
 ---
 
