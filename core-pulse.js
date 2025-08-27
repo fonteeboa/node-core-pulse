@@ -19,11 +19,12 @@ function parseArgs(argv) {
 }
 const args = parseArgs(process.argv);
 
+console.table(args);
 // Defaults e targets
 let BASE_URLS = args.baseURL.length ? args.baseURL : ["http://localhost:3000"];
 const MODE = (args.mode || "").toLowerCase();
 const PROFILE = (args.profile || "all").toLowerCase();
-const PATH_DEFAULT = args.route || "/health";
+const PATH_DEFAULT = args.route || ["/health"];
 const CONCURRENCY = Number(args.concurrency || 500);
 const RPS = args.rps ? Number(args.rps) : null;
 const DURATION_SEC = Number(args.duration || 3000);
@@ -57,26 +58,26 @@ function parseHeaders(list) {
 }
 const HEADERS = parseHeaders(args.header);
 
-function parseRoutes(routeArgs, defaultPath) {
+function parseRoutes(routeArgs) {
     const routes = [];
-    if (!routeArgs || routeArgs.length === 0) {
-        routes.push({ method: "GET", path: defaultPath, weight: 100 });
-    } else {
-        for (const r of routeArgs) {
-            const [verbAndPath, w] = r.split("@");
-            const [method, path] = verbAndPath.split(":");
-            routes.push({
-                method: (method || "GET").toUpperCase(),
-                path: path || defaultPath,
-                weight: w ? Number(w) : 1,
-            });
+    for (const r of routeArgs) {
+        const [verbAndPath, w] = r.split("@");
+        let [method, path] = verbAndPath.split(":");
+        if (!path) {
+            path = method;
+            method = "GET";
         }
+        routes.push({
+            method: (method).toUpperCase(),
+            path: path,
+            weight: w ? Number(w) : 1,
+        });
     }
     const total = routes.reduce((s, r) => s + (r.weight || 1), 0);
     routes.forEach((r) => (r._p = (r.weight || 1) / total));
     return routes;
 }
-const ROUTES = parseRoutes(args.route, PATH_DEFAULT);
+const ROUTES = parseRoutes(PATH_DEFAULT);
 
 function pickRouteWeighted(routes) {
     const x = Math.random();
